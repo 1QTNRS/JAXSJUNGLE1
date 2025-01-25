@@ -1,0 +1,37 @@
+name: Build Mac App
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      # 1) Check out code
+      - uses: actions/checkout@v3
+
+      # 2) Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # 3) Install py2app & dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install py2app requests pandas
+
+      # 4) Build .app
+      - name: Build .app
+        run: |
+          python setup.py py2app
+
+      # 5) Upload the .app as an artifact
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: JaxsWeatherAppArtifacts
+          path: dist/JaxsWeatherApp.app
